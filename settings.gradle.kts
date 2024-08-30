@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AppiumSample"
+rootProject.name = "AppiumForAndroid"
 include(":app")
  

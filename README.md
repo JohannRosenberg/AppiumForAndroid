@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="../../blob/main/images/feature.png" width="840" height="131" />
+</p>
+
 # Appium For Android
 
 A consise setup and demonstration of using Appium for Android using Jetpack Compose, Kotlin, JUint, UIAutomator and Gradle.
@@ -108,7 +112,7 @@ Appium is an HTTP server and operates using the default port 4723. It receives R
 
 ### The test app
 
-In order for Appium client driver to find Compose elements in an Android app, each component needs to set a **testTag** to a unique identifier. This is set using the Modifier object. You also need to set **testTagsAsResourceId** to true. However, you only need to set testTagsAsResourceId to true once but it must be set on a composable element that is high up in the UI hierarchy. This is often set on the Scaffold. The preferred way of setting **testTagsAsResourceId** is to create an extension function as follows:
+In order for Appium client driver to find Compose elements in an Android app, each component needs to set a **testTag** to a unique identifier. This is set using the Modifier object. You also need to set **testTagsAsResourceId** to true. However, you only need to set testTagsAsResourceId to true once but it must be set on a composable element that is high up in the UI hierarchy, as close to root as possible. This is often set on the Scaffold. The preferred way of setting **testTagsAsResourceId** is to create an extension function as follows:
 
 ```kotlin
 @OptIn(ExperimentalComposeUiApi::class)
@@ -155,6 +159,63 @@ class MainActivity : ComponentActivity() {
 
 
 In a real production app, you are normally going to have multiple screens with elements like buttons, textfields and such. It is easy to create a new composable by just copying it and modifying it. But if you fail to give a copied button a new identifier in the tag, only the first one will be found that shows up in the UI hierarchy. How you assign unique identifiers to elements is something you need to consider. Often, you will also be making reusable components and therefore you will probably need to pass in a unique identifier as a parameter.
+
+Assigning literal strings as identifiers is a bad idea. You might spell the string incorrectly. You might also accidentally use the same identifier elsewhere. And of course, many apps are usually developed in teams where more than one developer works on the app. Even if you have a file containing the identifiers as constants, you would have to constantly update your local copy to be sure you don't use an identifier name that another developer has already chosen.
+
+One solution that you can use to avoid the problem with using literal strings is to use a sealed class and define objects that represent the identifier. This is what the sample app uses:
+
+```kotlin
+sealed class ElementIdentifiers {
+    object scaffold: ElementIdentifiers()
+    object btnRollTheDice : ElementIdentifiers()
+    object txtUsername : ElementIdentifiers()
+    object txtPassword : ElementIdentifiers()
+    object btnLogin : ElementIdentifiers()
+
+    fun id(): String {
+        var id = this.toString()
+        val startPos = id.indexOf("$") + 1
+        val endPos = id.indexOf("@")
+        return id.substring(startPos, endPos)
+    }
+}
+```
+
+The id function is used to convert an object to a string representation. Objects in a sealed class must be unique. If you place this sealed class in its own file, it becomes easy to maintain and the test script can use it as well. Using this sealed class, the main activity's code shown above can be rewritten as follows:
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    private val ctx: Context = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            AppiumForAndroidTheme {
+                Scaffold(modifier = Modifier.fillMaxSize().setTagAndId(ElementIdentifiers.scaffold.id())) { _ ->
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(
+                            modifier = Modifier.setTagAndId(ElementIdentifiers.btnRollTheDice.id()),
+                            onClick = {
+                            Toast.makeText(ctx, "Yeah, you just won a million dollars!", LENGTH_LONG).show()
+                        },
+                            content = {
+                                Text("Roll the dice")
+                            })
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+
 
 
 
@@ -226,5 +287,71 @@ dependencies {
     implementation(libs.io.appium.java.client)
     androidTestImplementation(libs.org.seleniumhq.selenium)
     androidTestImplementation(libs.org.seleniumhq.selenium.remote.driver)
+}
+```
+
+
+
+The last step is to now create the test script. Here is the test script used in the sample app:
+
+```kotlin
+class AppiumForAndroidTest {
+    private lateinit var driver: AndroidDriver
+
+    @Test
+    fun testRollTheDice() {
+
+        val options = UiAutomator2Options()
+            .setUdid("711KPRW0598622") // Obtain this from running "adb devices" in a terminal.
+            .setAppPackage("io.github.johannrosenberg.appium")
+            .setAppActivity("MainActivity")
+
+        val driver = AndroidDriver(URL("http://127.0.0.1:4723"), options)
+
+        // This will take a screenshot of the UI and return the bitmap as an array of bytes.
+        val screenshotBytes = driver.getScreenshotAs(OutputType.BYTES)
+
+        // This will take a screenshot of the UI and store it to your local disk If you move your
+        // mouse over the variable, screenshotFile, the path will be indicated. A File object is
+        // returned.
+        val screenshotFile = driver.getScreenshotAs(OutputType.FILE)
+
+        /*
+            Write some code to test a previous snapshot of the screen with the current snapshot.
+            The test will pass if the screens are identical.
+
+            Tip: Instead of comparing bitmaps, use the array of bytes instead. Run the array
+            through a function that calculates either a checksum or hashcode. Instead of loading
+            the previous snapshot, load the checksum or hashcode for that screenshot instead. Then
+            compare checksums (or hashcodes). This is much faster. You still want to store the
+            bitmap as a file however because if the test fails, the developer still needs to
+            look at the "good" bitmap and compare it to the "bad" one.
+
+            assertTrue(goodChecksum == currentChecksum, "Screenshots must be identical")
+         */
+
+        try {
+            val button = findElement(ElementIdentifiers.btnRollTheDice, driver)
+            button.click()
+            
+            // Do some more testing after pressing the button...
+
+        } finally {
+            // Handle any exceptions.
+        }
+    }
+
+    @After
+    fun tearDown() {
+        if (::driver.isInitialized) {
+            // Calling driver.quit() will terminate the app. If you want the app to keep running, don't call quit().
+            driver.quit()
+        }
+    }
+}
+
+fun findElement(elemId: ElementIdentifiers, driver: AndroidDriver): WebElement {
+    val id1 = "new UiSelector().resourceId(\"" + elemId.id() + "\")"
+    return  driver.findElement(AppiumBy.androidUIAutomator(id1))
 }
 ```

@@ -49,23 +49,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-// Define a sealed class to represent different types of vehicles
-/*sealed class Vehicle {
-    // Define objects representing unique vehicle types
-    object Car : Vehicle()
-    object Motorcycle : Vehicle()
-    object Bicycle : Vehicle()
-
-    // Define a data class for a more complex vehicle type with properties
-    data class Truck(val capacity: Int) : Vehicle()
-
-    // Method to describe the vehicle
-    fun describe(): String {
-
-        var s = this.toString()
-        return s
-    }
-}*/
-
 
 

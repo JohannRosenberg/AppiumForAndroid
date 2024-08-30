@@ -28,7 +28,7 @@ class AppiumForAndroidTest {
         // This will take a screenshot of the UI and return the bitmap as an array of bytes.
         val screenshotBytes = driver.getScreenshotAs(OutputType.BYTES)
 
-        // This will take a screenshot of the UI and store it to your local disk If you move your
+        // This will take a screenshot of the UI and store it to your local disk. If you move your
         // mouse over the variable, screenshotFile, the path will be indicated. A File object is
         // returned.
         val screenshotFile = driver.getScreenshotAs(OutputType.FILE)

@@ -13,6 +13,3 @@ fun Modifier.setTagAndId(tag: String): Modifier {
         .semantics { this.testTagsAsResourceId = true }
         .testTag(tag)
 }
-
-class ComposeUtils {
-}

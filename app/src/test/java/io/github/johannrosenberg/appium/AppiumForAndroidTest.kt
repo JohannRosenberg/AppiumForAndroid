@@ -4,9 +4,11 @@ package io.github.johannrosenberg.appium
 import io.appium.java_client.AppiumBy
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.options.UiAutomator2Options
+import io.github.johannrosenberg.appium.ui.utils.ElementIdentifiers
 import org.junit.After
 import org.junit.Test
 import org.openqa.selenium.OutputType
+import org.openqa.selenium.WebElement
 import java.net.URL
 
 
@@ -15,6 +17,7 @@ class AppiumForAndroidTest {
 
     @Test
     fun doSomething() {
+
         val options = UiAutomator2Options()
             .setUdid("711KPRW0598622") // Obtain this from running "adb devices" in a terminal.
             .setAppPackage("io.github.johannrosenberg.appium")
@@ -31,8 +34,7 @@ class AppiumForAndroidTest {
         val screenshotFile = driver.getScreenshotAs(OutputType.FILE)
 
         try {
-            val button =
-                driver.findElement(AppiumBy.androidUIAutomator("new UiSelector().resourceId(\"myCoolButton\")"))
+            val button = findElement(ElementIdentifiers.btnRollTheDice, driver)
             button.click()
 
         } finally {
@@ -45,4 +47,9 @@ class AppiumForAndroidTest {
     fun tearDown() {
         driver.quit()
     }
+}
+
+fun findElement(elemId: ElementIdentifiers, driver: AndroidDriver): WebElement {
+    val id1 = "new UiSelector().resourceId(\"" + elemId.id() + "\")"
+    return  driver.findElement(AppiumBy.androidUIAutomator(id1))
 }

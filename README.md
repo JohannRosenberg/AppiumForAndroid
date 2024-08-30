@@ -106,6 +106,58 @@ Appium is an HTTP server and operates using the default port 4723. It receives R
 
 
 
+### The test app
+
+In order for Appium client driver to find Compose elements in an Android app, each component needs to set a **testTag** to a unique identifier. This is set using the Modifier object. You also need to set **testTagsAsResourceId** to true. However, you only need to set testTagsAsResourceId to true once but it must be set on a composable element that is high up in the UI hierarchy. This is often set on the Scaffold. The preferred way of setting **testTagsAsResourceId** is to create an extension function as follows:
+
+```kotlin
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.setTagAndId(tag: String): Modifier {
+    return this
+        .semantics { this.testTagsAsResourceId = true }
+        .testTag(tag)
+}
+```
+
+You then call setTagAndId on every element that you need to have access to with the Appium driver. The following code is the app being tested and shows how **testTagsAsResourceId** is used:
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    private val ctx: Context = this
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            AppiumForAndroidTheme {
+                Scaffold(modifier = Modifier.fillMaxSize().setTagAndId("scaffold")) { _ ->
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(
+                            modifier = Modifier.setTagAndId("btnRollTheDice"),
+                            onClick = {
+                            Toast.makeText(ctx, "Yeah, you just won a million dollars!", LENGTH_LONG).show()
+                        },
+                            content = {
+                                Text("Roll the dice")
+                            })
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+
+
+In a real production app, you are normally going to have multiple screens with elements like buttons, textfields and such. It is easy to create a new composable by just copying it and modifying it. But if you fail to give a copied button a new identifier in the tag, only the first one will be found that shows up in the UI hierarchy. How you assign unique identifiers to elements is something you need to consider. Often, you will also be making reusable components and therefore you will probably need to pass in a unique identifier as a parameter.
+
+
+
 ## Creating a test script
 
 Before we create a test script, we need an app to test. We're going to keep it really simple. The source code in this project displays a single screen with a button in the center. Jetpack Compose is used to create the screen. When you click on the button, a Toast is shown with a message. That's it. The UI is written using Jetpack Compose. Once you can get Appium to test a simple screen with just a button, you can spend your time figuring out how to add more code to do stuff like entering text into a textfield.

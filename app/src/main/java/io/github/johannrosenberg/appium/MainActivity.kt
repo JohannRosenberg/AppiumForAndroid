@@ -16,29 +16,31 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.johannrosenberg.appium.ui.theme.AppiumForAndroidTheme
+import io.github.johannrosenberg.appium.ui.utils.ElementIdentifiers
 import io.github.johannrosenberg.appium.ui.utils.setTagAndId
 
 class MainActivity : ComponentActivity() {
     private val ctx: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AppiumForAndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize().setTagAndId("scaffold")) { _ ->
+                Scaffold(modifier = Modifier.fillMaxSize().setTagAndId(ElementIdentifiers.scaffold.id())) { _ ->
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Button(
-                            modifier = Modifier.setTagAndId("myCoolButton"),
+                            modifier = Modifier.setTagAndId(ElementIdentifiers.btnRollTheDice.id()),
                             onClick = {
                             Toast.makeText(ctx, "Yeah, you just won a million dollars!", LENGTH_LONG).show()
                         },
                             content = {
-                                Text("Test")
+                                Text("Roll the dice")
                             })
                     }
                 }
@@ -46,4 +48,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+// Define a sealed class to represent different types of vehicles
+/*sealed class Vehicle {
+    // Define objects representing unique vehicle types
+    object Car : Vehicle()
+    object Motorcycle : Vehicle()
+    object Bicycle : Vehicle()
+
+    // Define a data class for a more complex vehicle type with properties
+    data class Truck(val capacity: Int) : Vehicle()
+
+    // Method to describe the vehicle
+    fun describe(): String {
+
+        var s = this.toString()
+        return s
+    }
+}*/
+
+
 

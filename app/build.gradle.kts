@@ -69,7 +69,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    testImplementation(kotlin("test"))
     androidTestImplementation(libs.org.junit.jupiter)
     androidTestImplementation(libs.org.junit.jupiter.engine)
     implementation(libs.io.appium.java.client)

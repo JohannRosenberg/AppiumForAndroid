@@ -114,6 +114,65 @@ If I get time, I'll update this project to include more things that you can test
 
 
 
-**Gradle Dependencies**
+**Gradle Dependencies - libs.versions.toml**
 
-If you are using Groovy Gradle, include the following dependencies. Note: the JUnit stuff is normally included in a project when you create a new Android project but I prefer to group all test dependencies together. Just delete the stuff that you already have in your build.gradle:
+In the libs.versions.toml file add the following. Note: the JUnit stuff is normally included in a project when you create a new Android project but I prefer to group all test dependencies together. Just delete the stuff that you already have in libs.versions.toml:
+
+```toml
+[versions]
+
+appium = "9.3.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+junitJupiter = "5.8.2"
+seleniumJava = "4.1.4"
+seleniumRemoteDriver = "4.23.1"
+
+[libraries]
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+org-junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junitJupiter" }
+org-junit-jupiter-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiter" }
+io-appium-java-client = { group = "io.appium", name = "java-client", version.ref = "appium" }
+org-seleniumhq-selenium = { group = "org.seleniumhq.selenium", name = "selenium-java", version.ref = "seleniumJava" }
+org-seleniumhq-selenium-remote-driver = { group = "org.seleniumhq.selenium", name = "selenium-remote-driver", version.ref = "seleniumRemoteDriver" }
+
+```
+
+
+
+If you are using Groovy DSL, add the following to your build.gradle dependencies:
+
+```kotlin
+dependencies {
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.ui.test.junit4
+    androidTestImplementation libs.androidx.ui.test.junit4
+    androidTestImplementation libs.org.junit.jupiter
+    androidTestImplementation libs.org.junit.jupiter.engine
+    implementation libs.io.appium.java.client
+    androidTestImplementation libs.org.seleniumhq.selenium
+    androidTestImplementation libs.org.seleniumhq.selenium.remote.driver
+}
+```
+
+
+
+If you are using Kotlin DSL, add the following to your build.gradle.kts dependencies:
+
+```groovy
+dependencies {
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.org.junit.jupiter)
+    androidTestImplementation(libs.org.junit.jupiter.engine)
+    implementation(libs.io.appium.java.client)
+    androidTestImplementation(libs.org.seleniumhq.selenium)
+    androidTestImplementation(libs.org.seleniumhq.selenium.remote.driver)
+}
+```

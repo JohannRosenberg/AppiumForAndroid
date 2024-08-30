@@ -1,11 +1,11 @@
 # Appium For Android
 
-A consise setup and demonstration of using Appium for Android using Kotlin, JUint, UIAutomator and Gradle.
+A consise setup and demonstration of using Appium for Android using Jetpack Compose, Kotlin, JUint, UIAutomator and Gradle.
 
 This documentation along with a sample app describes the steps needed to take to setup Appium to be used to test an Android app using a test script written in Kotlin and running from Android Studio. This is a very consise document and doesn't touch on Android testing or Appium. It assumes that you already know how to buid an Android app using Android Studio. While the setup instructions described in this documentation is for a MacOS machine, you should be able to make modifications if you are a Windows user.
 
 
-I wrote this document along with a simple test app because after spending hours trying out countless tutortials on how to setup Appium with the latest version (Appium 2.0 but using version 9.3.0 of the client library), it became frustrating when I wasn't making any progress. All of the   articles or sample apps used an older version of Appium which is no longer compatible with the 9.3.0 library. Add to this that many of the scripts were written in languages like Python. Like what Android develoepr seriously writes test apps using Python?
+I wrote this document along with a simple test app because after spending hours trying out countless tutortials on how to setup Appium with the latest version (Appium 2.0 but using version 9.3.0 of the client library), it became frustrating when I wasn't making any progress. All of the   articles or sample apps used an older version of Appium which is no longer compatible with the 9.3.0 library. Add to this that many of the scripts were written in languages like Python. Like what Android developer seriously writes test scripts using Python? 
 
 Sadly, Appium's own documentation on setting up and testing an Android app is severely lacking - in spite of Appium being the most popular testing framework for mobile. 
 
@@ -103,3 +103,17 @@ Appium is an HTTP server and operates using the default port 4723. It receives R
 ```bash
 > appium --version
 ```
+
+
+
+## Creating a test script
+
+Before we create a test script, we need an app to test. We're going to keep it really simple. The source code in this project displays a single screen with a button in the center. Jetpack Compose is used to create the screen. When you click on the button, a Toast is shown with a message. That's it. The UI is written using Jetpack Compose. Once you can get Appium to test a simple screen with just a button, you can spend your time figuring out how to add more code to do stuff like entering text into a textfield.
+
+If I get time, I'll update this project to include more things that you can test for, but to be honest, my approach to testing is far more conservative than most developers. I'm of the opinion that all you really need for UI testing is to fill in fields, click buttons and scroll. You then take a screen snapshot and compare it to a previous screen snapshot and if the two are not the same, this tells you something has changed and the test should fail. If the new screen is now the correct one to go with, you need to now make this the "good" screenshot that future tests will be compared to. This is a very simplified way of describing it. In reality, you do need to setup your CI/CD to handle this, which is outside the scope of this document. Finally, you need unit testing for non-UI stuff, and for the most part JUnit is good enough for that.
+
+
+
+**Gradle Dependencies**
+
+If you are using Groovy Gradle, include the following dependencies. Note: the JUnit stuff is normally included in a project when you create a new Android project but I prefer to group all test dependencies together. Just delete the stuff that you already have in your build.gradle:
